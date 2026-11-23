@@ -102,5 +102,10 @@ If you want a solid backdrop instead, pick Black, White, Dark, or a custom color
 
 ## License / credits
 
-- GIF encoding on the website: [gifenc](https://github.com/mattdesl/gifenc) (MIT)
+- GIF encoding on the website: [gifenc](https://github.com/mattdesl/gifenc) (MIT) — vendored into `vendor/`
+- GIF encoding / optimization CLI: [gifski](https://gif.ski/) (AGPL-3.0)
+- Web fonts: Google Fonts — Inter and Space Grotesk
+- GIF encoding library used during development and testing: [gif.js](https://github.com/jnordberg/gif.js) (MIT)
+- Browser testing: [Playwright](https://playwright.dev/) (MIT)
+- Static hosting: [GitHub Pages](https://pages.github.com/) (open source)
 
