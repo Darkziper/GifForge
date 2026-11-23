@@ -1,6 +1,6 @@
 # GifForge — GIF Maker
 
-**Webpage:** https://spongebobsquare22.github.io/gif-tool/
+**Webpage:** https://darkziper.github.io/GifForge/
 
 A free GIF maker for image frames. It runs entirely in the browser (no uploads, no server, no build step) and is hosted on GitHub Pages.
 
