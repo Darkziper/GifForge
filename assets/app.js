@@ -348,6 +348,10 @@ async function handleFiles(fileList) {
 
   loaded.sort((a, b) => naturalCompare(a.name, b.name));
   state.frames.push(...loaded);
+  state.frames.forEach((frame, index) => {
+    const ext = frame.name.split('.').pop() || 'png';
+    frame.name = `frame${String(index + 1).padStart(4, '0')}.${ext.toLowerCase()}`;
+  });
   afterFramesChanged();
   toast(`${loaded.length} frame${loaded.length === 1 ? '' : 's'} added.`);
 }
