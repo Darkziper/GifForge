@@ -104,15 +104,10 @@
   <main>
 
     <section>
-      <h2>Your situation <span class="tag">PNG frames</span></h2>
-      <p>You don't have an <code>input.mp4</code> — you have a folder of PNG images, one per frame (frame-by-frame animation). The tools below take those PNGs directly and turn them into a GIF. No video needed.</p>
-    </section>
-
-    <section>
       <h2>Make the GIF with GifForge <span class="tag">Browser</span></h2>
       <p>You don't need any install — the maker runs entirely in your browser (no uploads, no server, no build step). Just open the <a href="index.html">GIF maker</a> and:</p>
       <ol>
-        <li>Drop in your PNG frames — or pick them with the file browser. Files are sorted by name, so numbered sequences land in the right order.</li>
+        <li>Drop in your PNG frames — or pick them with the file browser. Files are sorted automaticly by the website, so numbered sequences land in the right order.</li>
         <li>Set the frame delay / FPS, loop count, max width, colors, and background.</li>
         <li>Hit <strong>Create GIF</strong>, wait for the Web Worker to encode, then <strong>Download GIF</strong>.</li>
       </ol>
@@ -122,7 +117,7 @@
     <section>
       <h2>Tips <span class="tag">Quality</span></h2>
       <ul>
-        <li><strong>Auto-naming &amp; order.</strong> GifForge sorts uploads by name and auto-renames them to <code>frame0001.png</code>, <code>frame0002.png</code>, etc., so you don't have to rename files manually. If needed, drag thumbnails in the maker to reorder.</li>
+        <li><strong>Auto naming</strong> GifForge sorts uploads by name and auto-renames them to <code>frame0001.png</code>, <code>frame0002.png</code>, etc., so you don't have to rename files manually.</li>
         <li><strong>Speed.</strong> Browsers cap GIF playback around 50 fps; keep frame delay at or above ~20 ms. The maker's FPS presets (10/15/24/30) handle this.</li>
         <li><strong>Clean output.</strong> If the sprite had no transparency, pick a solid background (Black / White / Dark / Custom) under <strong>Background</strong> — it avoids fringe entirely.</li>
       </ul>
