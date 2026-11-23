@@ -4,7 +4,7 @@
 
 A free GIF maker for image frames. It runs entirely in the browser (no uploads, no server, no build step) and is hosted on GitHub Pages.
 
-![Static site](https://img.shields.io/badge/hosting-GitHub%20Pages-ff5c8a) ![No build step](https://img.shields.io/badge/build-none-5cc8ff) ![100% client-side](https://img.shields.io/badge/privacy-100%25%20local-a78bfa)
+![Static site](https://img.shields.io/badge/hosting-GitHub%20Pages-ff5c8a) ![Zero setup](https://img.shields.io/badge/setup-zero-5cc8ff) ![100% client-side](https://img.shields.io/badge/privacy-100%25%20local-a78bfa)
 
 ---
 
