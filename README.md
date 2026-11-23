@@ -107,5 +107,3 @@ If you want a solid backdrop instead, pick Black, White, Dark, or a custom color
 - Web fonts: Google Fonts — Inter and Space Grotesk
 - GIF encoding library used during development and testing: [gif.js](https://github.com/jnordberg/gif.js) (MIT)
 - Browser testing: [Playwright](https://playwright.dev/) (MIT)
-- Static hosting: [GitHub Pages](https://pages.github.com/) (open source)
-
