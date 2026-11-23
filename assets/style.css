@@ -105,10 +105,6 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px 72px; }
 .drop-copy { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
 .link-btn { padding: 0; border: 0; background: none; color: var(--accent-2); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .hint { margin: 12px 0 0; color: var(--muted-2); font-size: .73rem; }
-.sample-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 7px 13px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255, 255, 255, .03); color: var(--muted); font-size: .75rem; font-weight: 500; transition: .2s; }
-.sample-btn:hover { color: var(--text); border-color: var(--border-strong); background: rgba(255, 255, 255, .055); }
-.sample-btn svg { width: 13px; height: 13px; }
-.sample-btn:disabled { opacity: .5; cursor: wait; }
 .drop-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(11, 13, 19, .82); color: var(--muted); font-size: .86rem; backdrop-filter: blur(3px); }
 .spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, .15); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

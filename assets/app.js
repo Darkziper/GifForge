@@ -9,7 +9,6 @@ const el = {
   fileInput: $('#fileInput'),
   dropzone: $('#dropzone'),
   browseBtn: $('#browseBtn'),
-  sampleBtn: $('#sampleBtn'),
   dropLoading: $('#dropLoading'),
   frames: $('#frames'),
   emptyFrames: $('#emptyFrames'),
@@ -169,7 +168,6 @@ function setDelay(ms) {
 function renderFrames() {
   el.frameCount.textContent = String(state.frames.length);
   el.emptyFrames.hidden = state.frames.length > 0;
-  el.sampleBtn.hidden = state.frames.length > 0;
   el.reverseBtn.disabled = state.frames.length < 2;
   el.clearBtn.disabled = state.frames.length === 0;
   el.frameCount.hidden = state.frames.length === 0;
@@ -352,38 +350,6 @@ async function handleFiles(fileList) {
   state.frames.push(...loaded);
   afterFramesChanged();
   toast(`${loaded.length} frame${loaded.length === 1 ? '' : 's'} added.`);
-}
-
-async function loadSample() {
-  if (state.encoding) return;
-  el.sampleBtn.disabled = true;
-  showDropLoading(true);
-
-  try {
-    const urls = Array.from(
-      { length: 16 },
-      (_, index) => `frames/frame${String(index + 1).padStart(4, '0')}.png`
-    );
-    const images = await Promise.all(urls.map(loadImage));
-    const loaded = images.map((img, index) => ({
-      id: ++uid,
-      name: urls[index].split('/').pop(),
-      url: urls[index],
-      img,
-      width: img.naturalWidth,
-      height: img.naturalHeight,
-      revoke: false
-    }));
-
-    state.frames.push(...loaded);
-    afterFramesChanged();
-    toast('Sample animation loaded — hit Create GIF!');
-  } catch (error) {
-    toast('Sample frames were not found. Add your own images instead.', true);
-  } finally {
-    el.sampleBtn.disabled = false;
-    showDropLoading(false);
-  }
 }
 
 /* ---------- Preview ---------- */
@@ -641,11 +607,6 @@ el.fileInput.addEventListener('change', () => {
 el.browseBtn.addEventListener('click', (event) => {
   event.stopPropagation();
   el.fileInput.click();
-});
-
-el.sampleBtn.addEventListener('click', (event) => {
-  event.stopPropagation();
-  loadSample();
 });
 
 el.dropzone.addEventListener('click', (event) => {

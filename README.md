@@ -84,7 +84,6 @@ git push -u origin main
 | `assets/app.js` | Upload, reordering, preview, settings, encoding orchestration |
 | `assets/gif-worker.js` | Web Worker that quantizes frames and writes the GIF |
 | `vendor/gifenc.esm.js` | [gifenc](https://github.com/mattdesl/gifenc) encoder (MIT), vendored for GitHub Pages |
-| `frames/` | 16 sample PNG frames used by the “Try the sample animation” button |
 | `gif-guide.html` | Step-by-step CLI guide linked from the site |
 | `.nojekyll` | Tells GitHub Pages to serve files without Jekyll processing |
 | `.gitignore` | Keeps the CLI binary and generated GIFs out of the repo |
@@ -174,4 +173,3 @@ For a fuller walkthrough, open **`gif-guide.html`** in a browser.
 
 - GIF encoding on the website: [gifenc](https://github.com/mattdesl/gifenc) (MIT)
 - CLI encoder: [gifski](https://gif.ski/) (open source, AGPL-3.0; binary bundled for local use)
-- Sample frames: GifForge project assets
