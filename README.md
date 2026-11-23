@@ -69,7 +69,7 @@ git init
 git add .
 git commit -m "GIF maker site"
 git branch -M main
-git remote add origin https://github.com/<you>/<repo>.git
+git remote add origin git@github-alt:spongebobsquare22/gif-tool.git
 git push -u origin main
 ```
 
