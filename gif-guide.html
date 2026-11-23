@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GifForge — GIF Guide</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: #1a1d27;
+      --accent: #ff5c8a;
+      --accent2: #5cc8ff;
+      --text: #e8eaf0;
+      --muted: #9aa0b5;
+      --border: #2a2e3d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #ff5c8a, #7a5cff);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 2.2rem; }
+    header p { margin: 8px 0 0; opacity: 0.9; }
+    .header-link { display: inline-block; margin-top: 16px; padding: 8px 16px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: #fff; text-decoration: none; font-weight: 600; font-size: .85rem; }
+    .header-link:hover { background: rgba(255,255,255,.14); }
+    main { max-width: 900px; margin: 0 auto; padding: 32px 20px 64px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    h2 { color: var(--accent); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    h3 { color: var(--accent2); }
+    p, li { color: var(--text); }
+    code {
+      background: #0b0d13;
+      color: #ffd28a;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.92em;
+    }
+    pre {
+      background: #0b0d13;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    pre code { background: none; padding: 0; color: #d6deeb; }
+    .tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 20px;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    .note {
+      background: rgba(92, 200, 255, 0.1);
+      border-left: 4px solid var(--accent2);
+      padding: 12px 16px;
+      border-radius: 6px;
+    }
+    a { color: var(--accent2); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+    th { color: var(--accent2); }
+    .files { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .file {
+      background: #0b0d13;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: Consolas, monospace;
+      color: #ffd28a;
+    }
+    footer { text-align: center; color: var(--muted); padding: 24px; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>GifForge — GIF Guide</h1>
+  <p>Turn frame-by-frame PNGs into GIFs (Windows PowerShell + free CLI tools)</p>
+  <a class="header-link" href="index.html">← Open the browser GIF maker</a>
+</header>
+
+<main>
+
+  <section>
+    <h2>Your situation <span class="tag">PNG frames</span></h2>
+    <p>You don't have an <code>input.mp4</code> — you have a folder of PNG images, one per frame (FNF THINK style). The tools below take those PNGs directly and turn them into a GIF. No video needed.</p>
+    <p class="note"><strong>Recommended tool:</strong> <code>gifski</code> — 100% free, command-line, high quality, works great with numbered PNG sequences. No FFmpeg required.</p>
+  </section>
+
+  <section>
+    <h2>Step 1 — Get the gifski CLI (already done)</h2>
+    <p class="note"><strong>Important:</strong> the <code>winget</code>/MSI version of gifski is the <strong>GUI app</strong> — it opens a window and does NOT work from the command line. You need the <strong>CLI binaries</strong> from https://gif.ski/.</p>
+    <p>I already downloaded the correct CLI for you into <code>gifski-cli\win\gifski.exe</code>. The scripts use it automatically. To verify:</p>
+    <pre><code>.\gifski-cli\win\gifski.exe --version</code></pre>
+    <p>(Should print <code>gifski 1.32.0</code>. If you ever need to re-download: https://gif.ski/gifski-1.32.0.zip → extract into a <code>gifski-cli</code> folder.)</p>
+  </section>
+
+  <section>
+    <h2>Step 2 — Put your frames in a folder</h2>
+    <p>Example layout inside this project:</p>
+    <pre><code>gif-tool\
+  frames\
+    frame0001.png
+    frame0002.png
+    frame0003.png
+    ...</code></pre>
+    <p class="note">Numbered names like <code>frame0001.png</code> are best — they keep the correct animation order.</p>
+  </section>
+
+  <section>
+    <h2>Step 3 — Make the GIF (clean, recommended)</h2>
+    <p>The full pipeline. It cleans semi-transparent noise first, then encodes:</p>
+    <pre><code>.\make-clean-gif.ps1</code></pre>
+    <p>This does two things:</p>
+    <ol>
+      <li><strong>clean-frames.ps1</strong> — binarizes alpha (&ge;200 → opaque, else transparent) into <code>frames-clean/</code>. Fixes the noise / white-bleeding issue.</li>
+      <li><strong>make-clean-gif.ps1</strong> — runs gifski on <code>frames-clean\*.png</code> → <code>output-clean.gif</code>.</li>
+    </ol>
+
+    <p><strong>Simple version (faster, less cleanup):</strong></p>
+    <pre><code>.\make-gif.ps1</code></pre>
+    <p>Uses bundled CLI → <code>output.gif</code>. Full resolution, may keep minor edge noise.</p>
+
+    <p><strong>With speed / size options (clean):</strong></p>
+    <pre><code>.\gifski-cli\win\gifski.exe --fps 24 -o .\output-clean.gif .\frames-clean\*.png</code></pre>
+    <ul>
+      <li><code>--fps 24</code> — playback speed (browsers cap at 50 fps)</li>
+      <li>omit <code>--width</code> to keep original size (best quality)</li>
+    </ul>
+    <p class="note"><strong>Why it looked blurry before:</strong> the old script forced <code>--width 480</code>, shrinking your 531px frames. It's now set to keep the full 531x650 resolution.</p>
+  </section>
+
+  <section>
+    <h2>Step 4 — Renumber messy frames (if needed)</h2>
+    <p>If your PNGs have random names, run this in PowerShell first:</p>
+    <pre><code>$i = 1
+Get-ChildItem .\frames\*.png | Sort-Object Name | ForEach-Object {
+    Rename-Item $_.FullName ("frame{0:D4}.png" -f $i)
+    $i++
+}</code></pre>
+    <p>Then run the make-gif / make-clean-gif command from Step 3.</p>
+  </section>
+
+  <section>
+    <h2>Step 5 — Speed / FPS</h2>
+    <p>To make it faster, change the FPS and re-run:</p>
+    <pre><code># In make-clean-gif.ps1 / make-gif.ps1:
+$Fps = 12   # change to 24, 30, etc.
+
+# Or via CLI:
+.\gifski-cli\win\gifski.exe --fps 24 -o .\output-clean.gif .\frames-clean\*.png</code></pre>
+    <ul>
+      <li><code>--fps 24</code> — playback speed (browsers cap at 50 fps)</li>
+      <li>Faster = higher FPS (e.g. <code>24</code>, <code>30</code>)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Ready-made scripts <span class="tag">just double-click / run</span></h2>
+    <p>I created these files next to this guide:</p>
+    <div class="files">
+      <div class="file">make-gif.ps1</div>
+      <div class="file">make-gif.bat</div>
+      <div class="file">clean-frames.ps1</div>
+      <div class="file">make-clean-gif.ps1</div>
+      <div class="file">renumber.ps1</div>
+    </div>
+    <ul>
+      <li><strong>make-gif.ps1</strong> — run in PowerShell: <code>.\make-gif.ps1</code> → <code>output.gif</code></li>
+      <li><strong>make-gif.bat</strong> — double-click in Windows Explorer → <code>output.gif</code></li>
+      <li><strong>clean-frames.ps1</strong> / <strong>make-clean-gif.ps1</strong> — clean pipeline → <code>output-clean.gif</code></li>
+      <li><strong>renumber.ps1</strong> — renames messy PNGs into <code>frame0001.png</code> format first</li>
+    </ul>
+    <p class="note">If PowerShell blocks scripts, run: <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></p>
+  </section>
+
+  <section>
+    <h2>Other free options</h2>
+    <table>
+      <tr><th>Tool</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>gifski</td><td>CLI</td><td>Best for PNG frames → GIF</td></tr>
+      <tr><td>gifsicle</td><td>CLI</td><td>Optimize an existing GIF: <code>gifsicle -O3 in.gif -o out.gif</code></td></tr>
+      <tr><td>ezgif.com</td><td>Website</td><td>Upload PNGs, no install</td></tr>
+      <tr><td>ShareX</td><td>Desktop app</td><td>Free screen capture + GIF tools</td></tr>
+      <tr><td>Photoshop</td><td>Paid app</td><td>Import frames as layers → Save for Web (GIF)</td></tr>
+    </table>
+  </section>
+
+</main>
+
+<footer>GifForge — GIF guide & scripts</footer>
+</body>
+</html>

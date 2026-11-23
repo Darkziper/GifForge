@@ -1,0 +1,13 @@
+# ---- Generated output (recreate with make-gif.ps1 / make-clean-gif.ps1) ----
+output*.gif
+frames-clean/
+
+# ---- Local CLI binary (~55 MB) ----
+# Not needed by the website. Delete this line if you want to publish it too.
+gifski-cli/
+
+# ---- OS / editor junk ----
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log
