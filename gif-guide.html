@@ -95,90 +95,42 @@
   </style>
 </head>
 <body>
-<header>
-  <h1>GifForge — GIF Guide</h1>
-  <p>Turn frame-by-frame PNGs into GIFs (Windows PowerShell + free CLI tools)</p>
-  <a class="header-link" href="index.html">← Open the browser GIF maker</a>
-</header>
+  <header>
+    <h1>GifForge — GIF Guide</h1>
+    <p>Turn frame-by-frame PNGs into GIFs — right in your browser</p>
+    <a class="header-link" href="index.html">← Open the browser GIF maker</a>
+  </header>
 
-<main>
+  <main>
 
-  <section>
-    <h2>Your situation <span class="tag">PNG frames</span></h2>
-    <p>You don't have an <code>input.mp4</code> — you have a folder of PNG images, one per frame (frame-by-frame animation). The tools below take those PNGs directly and turn them into a GIF. No video needed.</p>
-    <p class="note"><strong>Recommended tool:</strong> <code>gifski</code> — 100% free, command-line, high quality, works great with numbered PNG sequences. No FFmpeg required.</p>
-  </section>
+    <section>
+      <h2>Your situation <span class="tag">PNG frames</span></h2>
+      <p>You don't have an <code>input.mp4</code> — you have a folder of PNG images, one per frame (frame-by-frame animation). The tools below take those PNGs directly and turn them into a GIF. No video needed.</p>
+    </section>
 
-  <section>
-    <h2>Step 1 — Get the gifski CLI (already done)</h2>
-    <p class="note"><strong>Important:</strong> the <code>winget</code>/MSI version of gifski is the <strong>GUI app</strong> — it opens a window and does NOT work from the command line. You need the <strong>CLI binaries</strong> from https://gif.ski/.</p>
-    <p>I already downloaded the correct CLI for you into <code>gifski-cli\win\gifski.exe</code>. The scripts use it automatically. To verify:</p>
-    <pre><code>.\gifski-cli\win\gifski.exe --version</code></pre>
-    <p>(Should print <code>gifski 1.32.0</code>. If you ever need to re-download: https://gif.ski/gifski-1.32.0.zip → extract into a <code>gifski-cli</code> folder.)</p>
-  </section>
+    <section>
+      <h2>Make the GIF with GifForge <span class="tag">Browser</span></h2>
+      <p>You don't need any install — the maker runs entirely in your browser (no uploads, no server, no build step). Just open the <a href="index.html">GIF maker</a> and:</p>
+      <ol>
+        <li>Drop in your PNG frames — or pick them with the file browser. Files are sorted by name, so numbered sequences land in the right order.</li>
+        <li>Set the frame delay / FPS, loop count, max width, colors, and background.</li>
+        <li>Hit <strong>Create GIF</strong>, wait for the Web Worker to encode, then <strong>Download GIF</strong>.</li>
+      </ol>
+      <p class="note"><strong>Transparent GIF output:</strong> semi-transparent pixels are binarized at alpha ≥ 200, which removes the fuzzy edge noise and white bleed that GIF encoders produce from soft PNG alpha.</p>
+    </section>
 
-  <section>
-    <h2>Step 2 — Put your frames in a folder</h2>
-    <p>Example layout inside this project:</p>
-    <pre><code>gif-tool\
-  frames\
-    frame0001.png
-    frame0002.png
-    frame0003.png
-    ...</code></pre>
-    <p class="note">Numbered names like <code>frame0001.png</code> are best — they keep the correct animation order.</p>
-  </section>
+    <section>
+      <h2>Tips <span class="tag">Quality</span></h2>
+      <ul>
+        <li><strong>Order matters.</strong> Numbered names like <code>frame0001.png</code>, <code>frame0002.png</code> keep the animation order. You can also drag thumbnails in the maker to reorder.</li>
+        <li><strong>Speed.</strong> Browsers cap GIF playback around 50 fps; keep frame delay at or above ~20 ms. The maker's FPS presets (10/15/24/30) handle this.</li>
+        <li><strong>Clean output.</strong> If the sprite had no transparency, pick a solid background (Black / White / Dark / Custom) under <strong>Background</strong> — it avoids fringe entirely.</li>
+      </ul>
+      <p>For the full walkthrough, open the <a href="index.html">browser GIF maker</a>.</p>
+    </section>
 
-  <section>
-    <h2>Step 3 — Make the GIF (clean, recommended)</h2>
-    <p>The full pipeline. It cleans semi-transparent noise first, then encodes:</p>
-    <pre><code>.\make-clean-gif.ps1</code></pre>
-    <p>This does two things:</p>
-    <ol>
-      <li><strong>clean-frames.ps1</strong> — binarizes alpha (&ge;200 → opaque, else transparent) into <code>frames-clean/</code>. Fixes the noise / white-bleeding issue.</li>
-      <li><strong>make-clean-gif.ps1</strong> — runs gifski on <code>frames-clean\*.png</code> → <code>output-clean.gif</code>.</li>
-    </ol>
+  </main>
 
-    <p><strong>Simple version (faster, less cleanup):</strong></p>
-    <pre><code>.\make-gif.ps1</code></pre>
-    <p>Uses bundled CLI → <code>output.gif</code>. Full resolution, may keep minor edge noise.</p>
-
-    <p><strong>With speed / size options (clean):</strong></p>
-    <pre><code>.\gifski-cli\win\gifski.exe --fps 24 -o .\output-clean.gif .\frames-clean\*.png</code></pre>
-    <ul>
-      <li><code>--fps 24</code> — playback speed (browsers cap at 50 fps)</li>
-      <li>omit <code>--width</code> to keep original size (best quality)</li>
-    </ul>
-    <p class="note"><strong>Why it looked blurry before:</strong> the old script forced <code>--width 480</code>, shrinking your 531px frames. It's now set to keep the full 531x650 resolution.</p>
-  </section>
-
-  <section>
-    <h2>Step 4 — Renumber messy frames (if needed)</h2>
-    <p>If your PNGs have random names, run this in PowerShell first:</p>
-    <pre><code>$i = 1
-Get-ChildItem .\frames\*.png | Sort-Object Name | ForEach-Object {
-    Rename-Item $_.FullName ("frame{0:D4}.png" -f $i)
-    $i++
-}</code></pre>
-    <p>Then run the make-gif / make-clean-gif command from Step 3.</p>
-  </section>
-
-  <section>
-    <h2>Step 5 — Speed / FPS</h2>
-    <p>To make it faster, change the FPS and re-run:</p>
-    <pre><code># In make-clean-gif.ps1 / make-gif.ps1:
-$Fps = 12   # change to 24, 30, etc.
-
-# Or via CLI:
-.\gifski-cli\win\gifski.exe --fps 24 -o .\output-clean.gif .\frames-clean\*.png</code></pre>
-    <ul>
-      <li><code>--fps 24</code> — playback speed (browsers cap at 50 fps)</li>
-      <li>Faster = higher FPS (e.g. <code>24</code>, <code>30</code>)</li>
-    </ul>
-  </section>
-  
-</main>
-
-<footer>GifForge — GIF guide & scripts</footer>
+  <footer>GifForge — GIF guide</footer>
 </body>
 </html>
