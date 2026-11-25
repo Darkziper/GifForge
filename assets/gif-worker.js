@@ -63,15 +63,19 @@ self.onmessage = (event) => {
           for (let x = 0; x < width; x++) {
             const p = (y * width + x) * 4;
             const a = snapped[p + 3];
-            const threshold = (bayer4[(y % 4) * 4 + (x % 4)] + 0.5) * (255 / 16);
-            if (a < threshold) {
-              snapped[p] = 0;
-              snapped[p + 1] = 0;
-              snapped[p + 2] = 0;
-              snapped[p + 3] = 0;
+            if (a <= 32) {
+              snapped[p] = 0; snapped[p + 1] = 0; snapped[p + 2] = 0; snapped[p + 3] = 0;
               hasTransparency = true;
-            } else {
+            } else if (a >= 224) {
               snapped[p + 3] = 255;
+            } else {
+              const threshold = (bayer4[(y % 4) * 4 + (x % 4)] + 0.5) * (255 / 16);
+              if (a < threshold) {
+                snapped[p] = 0; snapped[p + 1] = 0; snapped[p + 2] = 0; snapped[p + 3] = 0;
+                hasTransparency = true;
+              } else {
+                snapped[p + 3] = 255;
+              }
             }
           }
         }
