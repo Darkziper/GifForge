@@ -19,29 +19,49 @@ self.onmessage = (event) => {
         // GIF only supports 1-bit alpha. Snap alpha first, then quantize RGB at
         // higher precision to avoid rgba4444 color artifacts on some frames.
         const snapped = new Uint8ClampedArray(rgba);
+        let hasTransparency = false;
         for (let p = 0; p < snapped.length; p += 4) {
           if (snapped[p + 3] < ALPHA_CUTOFF) {
             snapped[p] = 0;
             snapped[p + 1] = 0;
             snapped[p + 2] = 0;
             snapped[p + 3] = 0;
+            hasTransparency = true;
           } else {
             snapped[p + 3] = 255;
           }
         }
 
-        palette = quantize(snapped, Math.max(2, colors - 1), { format: 'rgb565' });
-        if (palette.length < 256) {
-          palette.push([0, 0, 0]);
-          transparentIndex = palette.length - 1;
-        } else {
-          palette[palette.length - 1] = [0, 0, 0];
-          transparentIndex = palette.length - 1;
+        palette = quantize(snapped, Math.max(2, hasTransparency ? colors - 1 : colors), { format: 'rgb565' });
+        if (hasTransparency) {
+          if (palette.length < 256) {
+            palette.push([0, 0, 0]);
+            transparentIndex = palette.length - 1;
+          } else {
+            palette[palette.length - 1] = [0, 0, 0];
+            transparentIndex = palette.length - 1;
+          }
         }
 
         index = applyPalette(snapped, palette, 'rgb565');
-        for (let p = 0, j = 0; p < snapped.length; p += 4, j++) {
-          if (snapped[p + 3] === 0) index[j] = transparentIndex;
+        if (hasTransparency) {
+          for (let p = 0, j = 0; p < snapped.length; p += 4, j++) {
+            if (snapped[p + 3] === 0) index[j] = transparentIndex;
+            else if (index[j] === transparentIndex) {
+              // Avoid making opaque pixels transparent when they map to the reserved slot.
+              let best = -1;
+              let bestDist = Infinity;
+              const r = snapped[p], g = snapped[p + 1], b = snapped[p + 2];
+              for (let k = 0; k < palette.length; k++) {
+                if (k === transparentIndex) continue;
+                const pc = palette[k];
+                const dr = r - pc[0], dg = g - pc[1], db = b - pc[2];
+                const d = dr * dr + dg * dg + db * db;
+                if (d < bestDist) { bestDist = d; best = k; if (d === 0) break; }
+              }
+              if (best >= 0) index[j] = best;
+            }
+          }
         }
       } else {
         palette = quantize(rgba, colors, { format: 'rgb565' });
