@@ -27,7 +27,7 @@ self.onmessage = (event) => {
           for (let x = 0; x < width; x++) {
             const p = (y * width + x) * 4;
             const a = snapped[p + 3];
-            if (a >= ALPHA_CUTOFF && a < 255) {
+            if (a > 0 && a < 255) {
               let r = 0, g = 0, b = 0, n = 0;
               for (let dy = -2; dy <= 2; dy++) {
                 const yy = y + dy;
@@ -53,15 +53,26 @@ self.onmessage = (event) => {
           }
         }
 
-        for (let p = 0; p < snapped.length; p += 4) {
-          if (snapped[p + 3] < ALPHA_CUTOFF) {
-            snapped[p] = 0;
-            snapped[p + 1] = 0;
-            snapped[p + 2] = 0;
-            snapped[p + 3] = 0;
-            hasTransparency = true;
-          } else {
-            snapped[p + 3] = 255;
+        const bayer4 = [
+          0, 8, 2, 10,
+          12, 4, 14, 6,
+          3, 11, 1, 9,
+          15, 7, 13, 5
+        ];
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const p = (y * width + x) * 4;
+            const a = snapped[p + 3];
+            const threshold = (bayer4[(y % 4) * 4 + (x % 4)] + 0.5) * (255 / 16);
+            if (a < threshold) {
+              snapped[p] = 0;
+              snapped[p + 1] = 0;
+              snapped[p + 2] = 0;
+              snapped[p + 3] = 0;
+              hasTransparency = true;
+            } else {
+              snapped[p + 3] = 255;
+            }
           }
         }
 
