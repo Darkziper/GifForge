@@ -20,6 +20,39 @@ self.onmessage = (event) => {
         // higher precision to avoid rgba4444 color artifacts on some frames.
         const snapped = new Uint8ClampedArray(rgba);
         let hasTransparency = false;
+
+        // Defringe semi-transparent edge pixels that will become opaque, so light
+        // matte halos don't bleed into the GIF.
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const p = (y * width + x) * 4;
+            const a = snapped[p + 3];
+            if (a >= ALPHA_CUTOFF && a < 255) {
+              let r = 0, g = 0, b = 0, n = 0;
+              for (let dy = -2; dy <= 2; dy++) {
+                const yy = y + dy;
+                if (yy < 0 || yy >= height) continue;
+                for (let dx = -2; dx <= 2; dx++) {
+                  const xx = x + dx;
+                  if (xx < 0 || xx >= width) continue;
+                  const q = (yy * width + xx) * 4;
+                  if (snapped[q + 3] === 255) {
+                    r += snapped[q];
+                    g += snapped[q + 1];
+                    b += snapped[q + 2];
+                    n++;
+                  }
+                }
+              }
+              if (n > 0) {
+                snapped[p] = Math.round(r / n);
+                snapped[p + 1] = Math.round(g / n);
+                snapped[p + 2] = Math.round(b / n);
+              }
+            }
+          }
+        }
+
         for (let p = 0; p < snapped.length; p += 4) {
           if (snapped[p + 3] < ALPHA_CUTOFF) {
             snapped[p] = 0;
