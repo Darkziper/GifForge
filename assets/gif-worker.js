@@ -1,6 +1,6 @@
 import { GIFEncoder, quantize, applyPalette } from '../vendor/gifenc.esm.js';
 
-const ALPHA_CUTOFF = 200;
+const ALPHA_CUTOFF = 128;
 
 self.onmessage = (event) => {
   const { frames, width, height, delay, loop, colors, transparent } = event.data;
