@@ -66,7 +66,7 @@ self.onmessage = (event) => {
             if (a <= 32) {
               snapped[p] = 0; snapped[p + 1] = 0; snapped[p + 2] = 0; snapped[p + 3] = 0;
               hasTransparency = true;
-            } else if (a >= 224) {
+            } else if (a >= 200) {
               snapped[p + 3] = 255;
             } else {
               const threshold = (bayer4[(y % 4) * 4 + (x % 4)] + 0.5) * (255 / 16);
