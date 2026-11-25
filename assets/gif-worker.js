@@ -22,34 +22,50 @@ self.onmessage = (event) => {
         let hasTransparency = false;
 
         // Defringe semi-transparent edge pixels that will become opaque, so light
-        // matte halos don't bleed into the GIF.
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const p = (y * width + x) * 4;
-            const a = snapped[p + 3];
-            if (a >= ALPHA_CUTOFF && a < 255) {
-              let r = 0, g = 0, b = 0, n = 0;
-              for (let dy = -2; dy <= 2; dy++) {
-                const yy = y + dy;
-                if (yy < 0 || yy >= height) continue;
-                for (let dx = -2; dx <= 2; dx++) {
-                  const xx = x + dx;
-                  if (xx < 0 || xx >= width) continue;
-                  const q = (yy * width + xx) * 4;
-                  if (snapped[q + 3] === 255) {
-                    r += snapped[q];
-                    g += snapped[q + 1];
-                    b += snapped[q + 2];
-                    n++;
-                  }
-                }
-              }
-              if (n > 0) {
-                snapped[p] = Math.round(r / n);
-                snapped[p + 1] = Math.round(g / n);
-                snapped[p + 2] = Math.round(b / n);
-              }
-            }
+        // matte halos don't bleed into the GIF. Use a nearest-opaque BFS so even
+        // large semi-transparent fringes get a clean color.
+        const totalPx = width * height;
+        const visited = new Uint8Array(totalPx);
+        const queue = new Int32Array(totalPx);
+        let qh = 0, qt = 0;
+        const srcR = new Uint8ClampedArray(totalPx);
+        const srcG = new Uint8ClampedArray(totalPx);
+        const srcB = new Uint8ClampedArray(totalPx);
+
+        for (let i = 0, p = 0; i < totalPx; i++, p += 4) {
+          if (snapped[p + 3] === 255) {
+            visited[i] = 1;
+            srcR[i] = snapped[p];
+            srcG[i] = snapped[p + 1];
+            srcB[i] = snapped[p + 2];
+            queue[qt++] = i;
+          }
+        }
+
+        const dxs = [-1, 0, 1, -1, 1, -1, 0, 1];
+        const dys = [-1, -1, -1, 0, 0, 1, 1, 1];
+        while (qh < qt) {
+          const idx = queue[qh++];
+          const x = idx % width;
+          const y = (idx / width) | 0;
+          const r = srcR[idx], g = srcG[idx], b = srcB[idx];
+          for (let d = 0; d < 8; d++) {
+            const nx = x + dxs[d];
+            const ny = y + dys[d];
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+            const nIdx = ny * width + nx;
+            if (visited[nIdx]) continue;
+            const np = nIdx * 4;
+            const na = snapped[np + 3];
+            if (na < ALPHA_CUTOFF || na === 255) continue;
+            visited[nIdx] = 1;
+            srcR[nIdx] = r;
+            srcG[nIdx] = g;
+            srcB[nIdx] = b;
+            snapped[np] = r;
+            snapped[np + 1] = g;
+            snapped[np + 2] = b;
+            queue[qt++] = nIdx;
           }
         }
 
