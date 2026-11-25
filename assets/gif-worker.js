@@ -16,27 +16,33 @@ self.onmessage = (event) => {
       let transparentIndex = -1;
 
       if (transparent) {
-        // GIF only supports 1-bit alpha. Anything below the cutoff becomes fully
-        // transparent, which removes the semi-transparent fringe / white bleed.
-        palette = quantize(rgba, colors, {
-          format: 'rgba4444',
-          oneBitAlpha: ALPHA_CUTOFF,
-          clearAlpha: true,
-          clearAlphaThreshold: ALPHA_CUTOFF
-        });
-
-        transparentIndex = palette.findIndex((color) => color[3] === 0);
-        if (transparentIndex === -1) {
-          if (palette.length < 256) {
-            palette.push([0, 0, 0, 0]);
-            transparentIndex = palette.length - 1;
+        // GIF only supports 1-bit alpha. Snap alpha first, then quantize RGB at
+        // higher precision to avoid rgba4444 color artifacts on some frames.
+        const snapped = new Uint8ClampedArray(rgba);
+        for (let p = 0; p < snapped.length; p += 4) {
+          if (snapped[p + 3] < ALPHA_CUTOFF) {
+            snapped[p] = 0;
+            snapped[p + 1] = 0;
+            snapped[p + 2] = 0;
+            snapped[p + 3] = 0;
           } else {
-            palette[palette.length - 1] = [0, 0, 0, 0];
-            transparentIndex = palette.length - 1;
+            snapped[p + 3] = 255;
           }
         }
 
-        index = applyPalette(rgba, palette, 'rgba4444');
+        palette = quantize(snapped, Math.max(2, colors - 1), { format: 'rgb565' });
+        if (palette.length < 256) {
+          palette.push([0, 0, 0]);
+          transparentIndex = palette.length - 1;
+        } else {
+          palette[palette.length - 1] = [0, 0, 0];
+          transparentIndex = palette.length - 1;
+        }
+
+        index = applyPalette(snapped, palette, 'rgb565');
+        for (let p = 0, j = 0; p < snapped.length; p += 4, j++) {
+          if (snapped[p + 3] === 0) index[j] = transparentIndex;
+        }
       } else {
         palette = quantize(rgba, colors, { format: 'rgb565' });
         index = applyPalette(rgba, palette, 'rgb565');
